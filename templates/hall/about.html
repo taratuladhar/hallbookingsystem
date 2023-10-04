@@ -1,0 +1,36 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<section class="sub-header" style="background-image: linear-gradient(rgba(4,9,30,0.7)
+,rgba(4,9,30,0.7)),url('{% static "images/imagesPC/building.jpg" %}')">
+
+    <h1>About Us</h1>
+
+</section>
+
+<section class="about-us">
+    <div class="row">
+        <div class="about-col">
+            <h1>Hall Booking System</h1>
+            <p>The Hall Booking System is a software application that allows users to reserve and manage 
+                the booking of a hall or venue for events. The system will provide an easy-to-use online 
+                platform where students, staff, and other authorized personnel can browse available hall, 
+                submit booking requests, and manage their reservations. The system aims to streamline the 
+                process of booking event spaces in a college setting. The system will include features such 
+                as availability checking, and reservation requests for event organizers 
+                and administration.
+                </p>
+           
+        </div>
+        <div class="about-col">
+            <img src="{% static 'images/imagesPC/hallwidecenter.jpg' %}" >
+        </div>
+    </div>
+</section>
+{% include "hall/footer.html" %}
+{% endblock content %}

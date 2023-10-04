@@ -1,0 +1,46 @@
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock css %}
+
+   <nav>
+        <a href="index.html"><img src="{% static 'images/imagesPC/logosq.png' %}"></a>
+        <div class="nav-links" id="navLinks">
+            <i class="fa fa-times" onclick="hideMenu()"></i>
+            <ul class="navbar">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
+                
+
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'book-page' %}">Book</a></li>
+                 <div class="dropdown">
+                    <a href="#" class="dropbtn"> {{user.username}}</a>
+                    <div class="dropdown-content">
+                        <li><a href="{% url 'user-profile' %}">My Profile</a></li>
+                        <li> <a href="#">My Bookings</a></li>
+                        <li><a href="{% url 'logout' %}">Log out</a></li>
+                    </div>
+                </div>
+                {% comment %} 
+                <div class="dropdown">
+                    <span href="{% url 'profile' %}" class="dropbtn">{{user.username}}</span>
+                    <ul class="dropdown-content">
+                        <li><a href="#"></a>Profile</li>
+                        <li> <a href="#">Bookings</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'logout' %}">Log out</a></li>
+                    </ul>
+                </div> {% endcomment %}
+                {% else %}
+                <li><a href="{% url 'register-page' %}">Register</a></li>
+                <li><a href="{% url 'login-page' %}">Login</a></li>
+                {% endif %}
+                
+            </ul>
+        </div>
+        <i class="fa fa-bars" onclick="showMenu()"></i>
+    </nav>
+    
+
+

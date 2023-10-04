@@ -1,0 +1,39 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="header" style="background-image: linear-gradient(rgba(4,9,30,0.7)
+,rgba(4,9,30,0.7)),url('{% static "images/imagesPC/building.jpg" %}')">
+    {% comment %} <nav>
+        <a href="index.html"><img src="C:\Users\Acer\OneDrive\Desktop\HallBookingSystem\imagesPC\logosq.png"></a>
+        <div class="nav-links" id="navLinks">
+            <i class="fa fa-times" onclick="hideMenu()"></i>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Calendar</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                
+
+            </ul>
+        </div>
+        <i class="fa fa-bars" onclick="showMenu()"></i>
+    </nav> {% endcomment %}
+   
+    <div class="text-box">
+        <h1>HALL BOOKING SYSTEM</h1>
+        <p>The Hall Booking System is a software application that allows users to reserve and manage the booking of a hall or venue for events. The system aims to streamline the process of booking event spaces in a college setting.</p>
+        {% if user.is_authenticated %}
+        <a href="" class="hero-btn">View Bookings</a>
+        {% endif %}
+    </div>
+</section>
+
+
+{% include "hall/footer.html" %}
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/styleforms.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+		<div class="container">
+			<div class="wrapperReg">
+				<div class="titleReg">
+					<span>Edit Profile</span>
+				</div>
+		
+				<form action="{% url 'edit-user-profile' %}" method="POST">
+					{% csrf_token %}
+					<div class="input_field">
+						<label for="edit_name">Name</label>
+						<input type="text" class="input" name="edit_name" id="edit_name" required>
+					</div>
+					<div class="input_field">
+						<label for="edit_email">Email Address</label>
+						<input type="email" class="input" name="edit_email" id="edit_email" value="{{user.email}}" readonly>
+					</div>
+					<div class="input_field">
+						<label for="edit_password">New Password</label>
+						<input type="password" class="input" name="edit_password" id="edit_password" required>
+					</div>
+					<div class="input_field">
+						<label for="confirm_password">Confirm Password</label>
+						<input type="password" class="input" name="confirm_password" id="confirm_password" required>
+					</div>
+					<div class="input_field">
+						<input type="submit" value="Update Profile" class="btn">
+					</div>
+				</form>
+			</div>
+		</div>
+
+{% endblock content %}

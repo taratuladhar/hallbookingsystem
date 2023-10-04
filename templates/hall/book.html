@@ -1,0 +1,55 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/styleforms.css' %}">
+{% endblock css %}
+
+{% block content %}
+    <div class="container">
+        <div class="wrapperReg">
+            <div class="titleReg">
+                <span>Booking Form</span>   
+            </div>
+           
+            <form action="{% url 'book-program' %}" method="POST">
+                {% csrf_token %}
+                <div class="input_field">
+                    <label for="">Program Title</label>
+                    <input type="text" class="input" name="pname" required>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Name</label>
+                    <input type="text" class="input" name="name" value="{{user.username}}" readonly>
+                  
+                </div>
+                <div class="input_field">
+                    <label for="">Date</label>
+                    <input type="date" class="input" name="date" required>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Time</label>
+                    <input type="time" class="input" name="time" required>
+                   
+                </div>
+                
+                <div class="input_field">
+                    <label for="">Email</label>
+                    <input type="email" class="input" name="email" value="{{user.email}}" readonly>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Description</label>
+                    <textarea class="input" name="description" rows="1" required></textarea>
+                    
+                </div>
+                <div class="input_field">
+                    <input type="submit" value="Book" class="btn">
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,44 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/styleforms.css' %}">
+{% endblock css %}
+
+{% block content %}
+    <div class="container">
+        <div class="wrapperReg">
+            <div class="titleReg">
+                <span>Registration Form</span>   
+            </div>
+           
+            <form action="{% url 'register' %}" method="POST">
+                {% csrf_token %}
+                <div class="input_field">
+                    <label for="">Name</label>
+                    <input type="text" class="input" name="name" required>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Email Address</label>
+                    <input type="text" class="input" name="email" required>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Password</label>
+                    <input type="password" class="input" name="password1" required>
+                  
+                </div>
+                <div class="input_field">
+                    <label for="">Confirm Password</label>
+                    <input type="password" class="input" name="password2" required>
+                    
+                </div>
+                <div class="input_field">
+                    <input type="submit" value="Register" class="btn">
+                </div>
+                <div class="login-link">Already registered? <a href="{% url 'login-page' %}">Login now!</a></div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}
