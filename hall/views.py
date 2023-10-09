@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect,HttpResponse
+from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login as login_view, logout as logout_view
 from .models import Booking
@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponseForbidden
+from .forms import BookingStatusForm
+from django.core.mail import send_mail
+
 
 
 # from . forms import RegistrationForm
@@ -69,30 +73,38 @@ def logout(request):
 
 @login_required
 def book_program(request):
-    print("1")
     if request.method == "POST":
-        print("11")
         program_title = request.POST.get("pname")
         name = request.POST.get("name")
         date = request.POST.get("date")
         time = request.POST.get("time")
         email = request.POST.get("email")
         description = request.POST.get("description")
-        print("111")
-        booking = Booking(
-            program_title=program_title,
-            name=name,
-            date=date,
-            time=time,
-            email=email,
-            description=description,
-        )
-        print("1111")
-        booking.save()
-        print("11111")
-        # You can redirect to a success page or another view here
-        messages.success(request, 'Hall booking request sent successfully.')
-        return redirect("home")
+
+        # Check if a booking already exists for the selected date and time
+        existing_booking = Booking.objects.filter(date=date, time=time)
+        
+        if existing_booking.exists():
+            messages.error(request, 'This time slot is already booked. Please choose another time.')
+        else:
+            booking = Booking(
+                program_title=program_title,
+                name=name,
+                date=date,
+                time=time,
+                email=email,
+                description=description,
+            )
+            booking.save()
+            send_mail(
+                'Booking Saved',
+                'Dear User, Your booking request has been sent successfully.  ',
+                'swetara88@gmail.com',
+                ['shakyasanush7@gmail.com'],
+                fail_silently=False,
+            )
+            messages.success(request, 'Hall booking request sent successfully.')
+            return redirect("home")
 
     return render(request, "hall/book.html")
 
@@ -119,9 +131,11 @@ def user_profile(request):
 
     return render(request, 'hall/user_profile.html', context)
 
+@login_required
 def edit_user_success(request):
     return redirect('edit-user-success')
 
+@login_required
 def edit_user_profile(request):
     if request.method == 'POST':
         new_name = request.POST['edit_name']
@@ -134,3 +148,33 @@ def edit_user_profile(request):
         return redirect('edit-user-success')  # Redirect to the profile editing page after successful update
 
     return render(request, 'hall/edit_user_profile.html') 
+
+@login_required
+def display_user_booking(request):
+    if request.method == "POST" and request.user.is_staff:
+        form = BookingStatusForm(request.POST)
+        if form.is_valid():
+            booking_id = form.cleaned_data['booking_id']
+            status = form.cleaned_data['status']
+            booking = Booking.objects.get(id=booking_id)
+            booking.status = status
+            booking.save()
+            messages.success(request, 'Booking status updated successfully.')
+             
+    user_bookings = Booking.objects.filter(email=request.user.email)  # Assuming email is used for user identification
+    return render(request, 'hall/user_booking.html', {'user_bookings': user_bookings})
+
+@login_required
+def user_delete_booking(request,pk):
+    booking = get_object_or_404(Booking, id=pk)
+
+    # Check if the logged-in user is the owner of the booking
+    if booking.email != request.user.email:  # Replace 'email' with the appropriate user identification field
+        # If not, return an error response or handle it as needed
+        return HttpResponseForbidden("You do not have permission to delete this booking.")
+
+    # Delete the booking
+    booking.delete()
+
+    # Redirect to a relevant page (e.g., user profile or booking history)
+    return redirect('display-user-booking') 

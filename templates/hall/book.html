@@ -25,15 +25,19 @@
                 </div>
                 <div class="input_field">
                     <label for="">Date</label>
-                    <input type="date" class="input" name="date" required>
-                    
-                </div>
-                <div class="input_field">
-                    <label for="">Time</label>
-                    <input type="time" class="input" name="time" required>
-                   
+                    <input type="date" class="input" name="date" id="date" required>
                 </div>
                 
+                <div class="input_field">
+                    <label for="">Start Time</label>
+                    <input type="time" class="input" name="time" id="time" required> 
+                </div>
+
+                <div class="input_field">
+                    <label for="">End Time</label>
+                    <input type="time" class="input" name="time" id="time" required> 
+                </div>
+                 
                 <div class="input_field">
                     <label for="">Email</label>
                     <input type="email" class="input" name="email" value="{{user.email}}" readonly>
@@ -52,4 +56,54 @@
         </div>
     </div>
 
+    <script>
+        // Get the current date in the format yyyy-mm-dd
+        var currentDate = new Date().toISOString().split('T')[0];
+        
+        // Set the minimum date attribute to the current date
+        document.getElementById('date').min = currentDate;
+    </script>
+    <script>
+        function validateTime() {
+            // Get the selected time from the input field
+            var selectedTime = document.getElementById('time').value;
+    
+            // Parse the selected time into hours and minutes
+            var timeParts = selectedTime.split(':');
+            var hours = parseInt(timeParts[0]);
+    
+            // Check if the selected time is between 7 AM (07:00) and 4 PM (16:00)
+            if (hours >= 7 && hours <= 16) {
+                // Time is valid
+                return true;
+            } else {
+                // Time is not valid
+                alert("Please select a time between 7 AM and 4 PM.");
+                return false;
+            }
+        }
+    
+        // Add a form submission event listener to validate the time before submitting
+        document.querySelector('form').addEventListener('submit', function (e) {
+            if (!validateTime()) {
+                e.preventDefault(); // Prevent form submission if time is not valid
+            }
+        });
+    </script>
 {% endblock content %}
+
+
+
+
+{% comment %} <div class="inputBox">
+    <label for="departureDate">Departure Date:</label>
+    <input type="date" id="departureDate" name="leaving" required>
+</div>
+
+<script>
+    // Get the current date from Django template
+    var currentDate = "{{ date.today|date:'Y-m-d' }}";
+
+    // Set the minimum date attribute of the input element
+    document.getElementById('date').min = currentDate;
+</script> {% endcomment %}

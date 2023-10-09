@@ -18,7 +18,7 @@
                     <a href="#" class="dropbtn"> {{user.username}}</a>
                     <div class="dropdown-content">
                         <li><a href="{% url 'user-profile' %}">My Profile</a></li>
-                        <li> <a href="#">My Bookings</a></li>
+                        <li> <a href="{% url 'display-user-booking' %}">My Bookings</a></li>
                         <li><a href="{% url 'logout' %}">Log out</a></li>
                     </div>
                 </div>

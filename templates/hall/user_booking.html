@@ -1,0 +1,90 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% comment %} <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> {% endcomment %}
+<style>
+  /* Add your custom table styles here */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  tr:hover {
+    background-color: #ddd;
+  }
+
+  /* Style the delete icon */
+  .delete-icon {
+    color: red;
+    text-decoration: none;
+    font-size: 25px;
+  }
+</style>
+{% endblock css %}
+
+{% block content %}
+
+<h2 style="text-align: center; padding: 25px; "> Booking Details</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Program Title</th>
+        <th scope="col">Name</th>
+        <th scope="col">Date</th>
+        <th scope="col">Time</th>
+        <th scope="col">Email</th>
+        <th scope="col">Description</th>
+        <th scope="col">Status</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for booking in user_bookings %}
+        <tr>
+          <td>{{ booking.program_title }}</td>
+          <td>{{ booking.name }}</td>
+          <td>{{ booking.date }}</td>
+          <td>{{ booking.time }}</td>
+          <td>{{ booking.email }}</td>
+          <td>{{ booking.description }}</td>
+          <td>{{ booking.status }}</td>
+          <td>
+            {% if request.user.is_staff %}
+              <form method="post" action="{% url 'display-user-booking' %}">
+                {% csrf_token %}
+                <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                <select name="status">
+                  <option value="pending">Pending</option>
+                  <option value="approve">Approve</option>
+                </select>
+                <button type="submit">Update Status</button>
+              </form>
+            {% endif %}
+            <a style="color:red; text-decoration:none;font-size:25px" href="{% url 'user-delete-booking' booking.id  %}">&#10008;</a>
+          </td>
+          
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6">You have no bookings yet.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock content %}
