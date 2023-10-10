@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login as login_view, logout as logout_view
@@ -6,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 from .forms import BookingStatusForm
 from django.core.mail import send_mail
-
+from django.db import IntegrityError
 
 
 # from . forms import RegistrationForm
@@ -33,7 +34,6 @@ def registerPage(request):
 def loginPage(request):
     return render(request, 'hall/login.html')
 
-
 # ================================*************=======================================
  
 def register(request):
@@ -46,11 +46,19 @@ def register(request):
         if pass1!=pass2:
             return HttpResponse("Your password and confirm password doesnot match !!")
         else:
-            my_user=User.objects.create_user(uname,email,pass1)
-            my_user.save()
-            messages.success(request, 'User registered successfully.')
-            return redirect('login-page')
-        
+            if User.objects.filter(username=uname).exists() or User.objects.filter(email=email).exists():
+                messages.error(request, "A user with the same username or email address already exists. Please choose different credentials.")
+                return redirect('register-page')
+            else:
+                try:
+                    my_user = User.objects.create_user(uname, email, pass1)
+                    my_user.save()
+                    messages.success(request, 'New user registered successfully.')
+                    return redirect('login-page')
+                except IntegrityError:
+                    messages.error(request, "An error occurred during registration.")
+                    return redirect('register-page')
+                
     return render(request, 'hall/register.html')
     
 def login(request):
@@ -77,32 +85,45 @@ def book_program(request):
         program_title = request.POST.get("pname")
         name = request.POST.get("name")
         date = request.POST.get("date")
-        time = request.POST.get("time")
+        start_time = request.POST.get("start_time")
+        end_time = request.POST.get("end_time")
         email = request.POST.get("email")
         description = request.POST.get("description")
 
-        # Check if a booking already exists for the selected date and time
-        existing_booking = Booking.objects.filter(date=date, time=time)
-        
-        if existing_booking.exists():
+        # Convert start_time and end_time to datetime objects
+        start_datetime = datetime.datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
+        end_datetime = datetime.datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
+
+        # Check if a booking already exists for the selected date and time range
+        conflicting_bookings = Booking.objects.filter(
+            date=date,
+            start_time__lte=end_datetime,
+            end_time__gte=start_datetime,
+        )
+
+        if conflicting_bookings.exists():
             messages.error(request, 'This time slot is already booked. Please choose another time.')
         else:
             booking = Booking(
                 program_title=program_title,
                 name=name,
                 date=date,
-                time=time,
+                start_time=start_time,
+                end_time=end_time,
                 email=email,
                 description=description,
+                user=request.user,
             )
             booking.save()
+            
             send_mail(
-                'Booking Saved',
-                'Dear User, Your booking request has been sent successfully.  ',
+                'Booking Request Sent',
+                'Dear User, Your booking request has been sent successfully.',
                 'swetara88@gmail.com',
-                ['shakyasanush7@gmail.com'],
+                [email],
                 fail_silently=False,
             )
+            
             messages.success(request, 'Hall booking request sent successfully.')
             return redirect("home")
 
@@ -178,3 +199,35 @@ def user_delete_booking(request,pk):
 
     # Redirect to a relevant page (e.g., user profile or booking history)
     return redirect('display-user-booking') 
+
+@login_required
+def approve_booking(request, booking_id):
+    try:
+        booking = get_object_or_404(Booking, id=booking_id)
+
+        # Check if the booking belongs to the logged-in admin
+        if booking.admin != request.user:
+            return HttpResponseForbidden("You do not have permission to approve this booking.")
+
+        if booking.status != 'approved':
+            booking.status = 'approved'
+            booking.save()
+
+            # Send an email to the user when booking is approved
+            send_mail(
+                'Booking Approved',
+                'Dear ' + booking.user.username + ', Your booking request has been approved.',
+                'swetara88@gmail.com',  # Sender's email address
+                [booking.user.email],  # Recipient's email address
+                fail_silently=False,
+            )
+
+            # Add a success message for the user
+            messages.success(request, 'Your booking request has been approved.')
+
+        else:
+            messages.warning(request, 'Booking is already approved.')
+
+        return redirect("display-user-booking")  # Redirect to user's booking display page
+    except Booking.DoesNotExist:
+        return HttpResponseNotFound("Booking not found.")
