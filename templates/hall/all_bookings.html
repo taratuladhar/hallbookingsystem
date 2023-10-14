@@ -1,0 +1,72 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    /* Add your custom table styles here */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+  
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  
+    th {
+      background-color: #f2f2f2;
+    }
+  
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  
+    tr:hover {
+      background-color: #ddd;
+    }
+  
+    /* Style the delete icon */
+    .delete-icon {
+      color: red;
+      text-decoration: none;
+      font-size: 25px;
+    }
+  </style>
+{% endblock css %}
+
+{% block content %}
+<hr>
+<h2 style="text-align: center; padding: 25px; ">Your Booking Details</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Program Title</th>
+        <th scope="col">Name</th>
+        <th scope="col">Date</th>
+        <th scope="col">Start Time</th>
+        <th scope="col">End Time</th>
+        <th scope="col">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.program_title }}</td>
+          <td>{{ booking.name }}</td>
+          <td>{{ booking.date }}</td>
+          <td>{{ booking.start_time }}</td>
+          <td>{{ booking.end_time }}</td>
+          <td>{{ booking.email }}</td>        
+        </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">No bookings found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock content %}

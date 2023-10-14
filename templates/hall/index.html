@@ -28,9 +28,9 @@
     <div class="text-box">
         <h1>HALL BOOKING SYSTEM</h1>
         <p>The Hall Booking System is a software application that allows users to reserve and manage the booking of a hall or venue for events. The system aims to streamline the process of booking event spaces in a college setting.</p>
-        {% if user.is_authenticated %}
-        <a href="" class="hero-btn">View Bookings</a>
-        {% endif %}
+         {% if user.is_authenticated %}
+        <a href="{%url 'all-bookings'%}" class="hero-btn">View Bookings</a>
+        {% endif %} 
     </div>
 </section>
 

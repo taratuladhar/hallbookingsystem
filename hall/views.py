@@ -154,7 +154,7 @@ def user_profile(request):
 
 @login_required
 def edit_user_success(request):
-    return redirect('edit-user-success')
+    return render(request,'hall/edit_user_success.html')
 
 @login_required
 def edit_user_profile(request):
@@ -199,6 +199,16 @@ def user_delete_booking(request,pk):
 
     # Redirect to a relevant page (e.g., user profile or booking history)
     return redirect('display-user-booking') 
+
+@login_required
+def all_bookings(request):
+    all_bookings = Booking.objects.all()
+
+    context = {
+        'bookings': all_bookings,
+    }
+
+    return render(request, 'hall/all_bookings.html', context)
 
 @login_required
 def approve_booking(request, booking_id):
