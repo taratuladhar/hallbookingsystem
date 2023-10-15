@@ -38,7 +38,7 @@
 
 {% block content %}
 <hr>
-<h2 style="text-align: center; padding: 25px; ">Your Booking Details</h2>
+<h2 style="text-align: center; padding: 25px; ">Booking Details</h2>
   <table class="table">
     <thead>
       <tr>
@@ -48,6 +48,7 @@
         <th scope="col">Start Time</th>
         <th scope="col">End Time</th>
         <th scope="col">Email</th>
+        <th scope="col">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -58,7 +59,8 @@
           <td>{{ booking.date }}</td>
           <td>{{ booking.start_time }}</td>
           <td>{{ booking.end_time }}</td>
-          <td>{{ booking.email }}</td>        
+          <td>{{ booking.email }}</td>  
+          <td>{{ booking.status }}</td>      
         </tr>
         {% empty %}
             <tr>

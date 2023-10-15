@@ -25,7 +25,5 @@ urlpatterns = [
     path("display_user_booking/",views.display_user_booking, name='display-user-booking'),
     path("user_delete_booking/<int:pk>/",views.user_delete_booking, name='user-delete-booking'),
     
-    path('all_bookings/', views.all_bookings, name='all-bookings'),
-    
-    
+    path('all_bookings/', views.all_bookings, name='all-bookings')
 ]

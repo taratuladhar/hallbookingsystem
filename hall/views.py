@@ -210,34 +210,34 @@ def all_bookings(request):
 
     return render(request, 'hall/all_bookings.html', context)
 
-@login_required
-def approve_booking(request, booking_id):
-    try:
-        booking = get_object_or_404(Booking, id=booking_id)
+# @login_required
+# def approve_booking(request, booking_id):
+#     try:
+#         booking = get_object_or_404(Booking, id=booking_id)
 
-        # Check if the booking belongs to the logged-in admin
-        if booking.admin != request.user:
-            return HttpResponseForbidden("You do not have permission to approve this booking.")
+#         # Check if the booking belongs to the logged-in admin
+#         if booking.admin != request.user:
+#             return HttpResponseForbidden("You do not have permission to approve this booking.")
 
-        if booking.status != 'approved':
-            booking.status = 'approved'
-            booking.save()
+#         if booking.status != 'approved':
+#             booking.status = 'approved'
+#             booking.save()
 
-            # Send an email to the user when booking is approved
-            send_mail(
-                'Booking Approved',
-                'Dear ' + booking.user.username + ', Your booking request has been approved.',
-                'swetara88@gmail.com',  # Sender's email address
-                [booking.user.email],  # Recipient's email address
-                fail_silently=False,
-            )
+#             # Send an email to the user when booking is approved
+#             send_mail(
+#                 'Booking Approved',
+#                 'Dear ' + request.user.username + ', Your booking request has been approved.',
+#                 'swetara88@gmail.com',  # Sender's email address
+#                 [request.user.email],  # Recipient's email address
+#                 fail_silently=False,
+#             )
 
-            # Add a success message for the user
-            messages.success(request, 'Your booking request has been approved.')
+#             # Add a success message for the user
+#             messages.success(request, 'Your booking request has been approved.')
 
-        else:
-            messages.warning(request, 'Booking is already approved.')
+#         else:
+#             messages.warning(request, 'Booking is already approved.')
 
-        return redirect("display-user-booking")  # Redirect to user's booking display page
-    except Booking.DoesNotExist:
-        return HttpResponseNotFound("Booking not found.")
+#         return redirect("display-user-booking")  # Redirect to user's booking display page
+#     except Booking.DoesNotExist:
+#         return HttpResponseNotFound("Booking not found.")
