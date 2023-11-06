@@ -20,3 +20,12 @@ class Booking(models.Model):
     
     def __str__(self):
         return self.program_title
+    
+    
+class Feedback(models.Model):
+    date=models.DateField(auto_now=True)
+    by=models.CharField(max_length=40)
+    message=models.CharField(max_length=500)
+    
+    def __str__(self):
+        return self.by

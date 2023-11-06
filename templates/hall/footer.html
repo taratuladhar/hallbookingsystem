@@ -1,12 +1,21 @@
 {% load static %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    .icons i:hover {
+        color: inherit; 
+        background-color: transparent; 
+        text-decoration: none;
+        cursor: default; 
+    }
+</style>
+
 {% endblock css %}
 <section class="footer">
     <h4>About Us</h4>
     <p>The Hall Booking System is a software application that allows users to reserve and manage the booking of a hall or venue for events. The system aims to streamline the process of booking event spaces in a college setting. </p>
 
-    <div class="icons">
+    <div class="icons" >
         <i class="fa-brands fa-facebook"></i>
         <i class="fa-brands fa-instagram"></i>
         <i class="fa-brands fa-twitter"></i>

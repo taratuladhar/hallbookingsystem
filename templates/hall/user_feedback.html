@@ -1,0 +1,35 @@
+{% extends 'hall/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/styleforms.css' %}">
+{% endblock css %}
+
+{% block content %}
+    <div class="container">
+        <div class="wrapperReg">
+            <div class="titleReg">
+                <span>Feedback Form</span>   
+            </div>
+           
+            <form action="{% url 'user-feedback' %}" method="POST">
+                {% csrf_token %}
+                <div class="input_field">
+                    <label for="">Name</label>
+                    <input type="text" class="input" name="by" value="{{user.username}}" readonly>
+                    
+                </div>
+                <div class="input_field">
+                    <label for="">Message</label>
+                    <textarea name="message" class="form-control"  rows="3" placeholder="Message" style="height: 50px; width: 100%;" required></textarea>
+                    
+                </div>
+               
+                <div class="input_field">
+                    <input type="submit" value="Send" class="btn">
+                </div>
+            
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}

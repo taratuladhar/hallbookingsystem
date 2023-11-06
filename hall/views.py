@@ -1,4 +1,5 @@
 import datetime
+from django import forms
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login as login_view, logout as logout_view
@@ -12,6 +13,11 @@ from .forms import BookingStatusForm
 from django.core.mail import send_mail
 from django.db import IntegrityError
 
+from hall import models
+from .forms import FeedbackForm
+
+
+from . import forms 
 
 # from . forms import RegistrationForm
 # from django.contrib.auth.forms import AuthenticationForm
@@ -210,34 +216,25 @@ def all_bookings(request):
 
     return render(request, 'hall/all_bookings.html', context)
 
-# @login_required
-# def approve_booking(request, booking_id):
-#     try:
-#         booking = get_object_or_404(Booking, id=booking_id)
+def feedbackPage(request):
+    return render(request, 'hall/user_feedback.html')
 
-#         # Check if the booking belongs to the logged-in admin
-#         if booking.admin != request.user:
-#             return HttpResponseForbidden("You do not have permission to approve this booking.")
-
-#         if booking.status != 'approved':
-#             booking.status = 'approved'
-#             booking.save()
-
-#             # Send an email to the user when booking is approved
-#             send_mail(
-#                 'Booking Approved',
-#                 'Dear ' + request.user.username + ', Your booking request has been approved.',
-#                 'swetara88@gmail.com',  # Sender's email address
-#                 [request.user.email],  # Recipient's email address
-#                 fail_silently=False,
-#             )
-
-#             # Add a success message for the user
-#             messages.success(request, 'Your booking request has been approved.')
-
-#         else:
-#             messages.warning(request, 'Booking is already approved.')
-
-#         return redirect("display-user-booking")  # Redirect to user's booking display page
-#     except Booking.DoesNotExist:
-#         return HttpResponseNotFound("Booking not found.")
+@login_required
+def user_feedback(request):
+    user=request.user
+    print("1")
+    feedback=forms.FeedbackForm()
+    print("2")
+    if request.method=='POST':
+        print("3")
+        feedback=forms.FeedbackForm(request.POST)
+        print("4")
+        if feedback.is_valid():
+            print("5")
+            feedback.save()
+            
+        else:
+            print("form is invalid")
+            print(feedback.errors)
+        return render(request,'hall/feedback_sent.html',{'user':user})
+    return render(request,'hall/user_feedback.html',{'feedback':feedback,'user':user})

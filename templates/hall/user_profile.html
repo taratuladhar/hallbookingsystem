@@ -2,7 +2,16 @@
 {% load static %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/styleforms.css' %}">
-    
+    <style>
+
+        @media (max-width: 768px) {
+            /* Adjust button width for smaller screens */
+            .button {
+                width: 90%;
+                max-width: none;
+            }
+        }
+    </style>
 {% endblock css %}
 
 {% block content %}
@@ -15,11 +24,20 @@
       <h3 style="margin: 0;"><b>Email:</b> {{ user.email }}</h3>
   </div>
   <div style="text-align: center; width: 100%; margin-top: 20px;">
-      <a href="{% url 'edit-user-profile' %}"><button class="button" style="height: 50px; width: 90%; font-size: larger; background-color: yellow;"><span><b>Edit Profile</b></span></button></a>
+      <button class="button" style="height: 50px; width: 90%; font-size: larger; background-color: yellow; "><a href="{% url 'edit-user-profile' %} " style="text-decoration: none; color: black;"><span><b>Edit Profile</b></span></a></button>
   </div>
 </div>
+{% comment %} <div>
+    <button class="button" style="height: 50px; width: 41%; font-size: larger; background-color: green; margin-left:480px; margin-top: 15px; "><a href="{% url 'feedback-page' %}" style="text-decoration: none; color: black;"><span><b>Feedback</b></span></a></button>
+</div> {% endcomment %}
 
-
+<div style="text-align: center; margin-top: 15px;">
+    <button class="button" style="height: 50px; width: 70%; max-width: 300px; font-size: larger; background-color: green;">
+        <a href="{% url 'feedback-page' %}" style="text-decoration: none; color: black;">
+            <span><b>Feedback</b></span>
+        </a>
+    </button>
+</div>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
