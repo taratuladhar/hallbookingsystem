@@ -187,7 +187,7 @@ def display_user_booking(request):
             booking.status = status
             booking.save()
             messages.success(request, 'Booking status updated successfully.')
-             
+                 
     user_bookings = Booking.objects.filter(email=request.user.email)  # Assuming email is used for user identification
     return render(request, 'hall/user_booking.html', {'user_bookings': user_bookings})
 
@@ -208,10 +208,10 @@ def user_delete_booking(request,pk):
 
 @login_required
 def all_bookings(request):
-    all_bookings = Booking.objects.all()
+    approved_bookings = Booking.objects.filter(status='Approved')
 
     context = {
-        'bookings': all_bookings,
+        'bookings': approved_bookings,
     }
 
     return render(request, 'hall/all_bookings.html', context)
@@ -228,6 +228,7 @@ def user_feedback(request):
     if request.method=='POST':
         print("3")
         feedback=forms.FeedbackForm(request.POST)
+        
         print("4")
         if feedback.is_valid():
             print("5")
