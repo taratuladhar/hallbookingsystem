@@ -523,11 +523,24 @@ h3{
 }
 
 /* Customize alert text color for different alert types */
-.alert-success {
-    color: #155724; /* Change to your desired text color for success alerts */
-    background-color: #d4edda; /* Change to your desired background color for success alerts */
+/* .alert-success {
+    color: #155724; 
+    background-color: #d4edda; 
 }
+
 .alert-danger {
-    color: #721c24; /* Change to your desired text color for danger alerts */
-    background-color: #f8d7da; /* Change to your desired background color for danger alerts */
+    color: #721c24; 
+    background-color: #f8d7da; 
+} */
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
 }

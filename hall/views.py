@@ -12,11 +12,13 @@ from django.http import HttpResponseForbidden, HttpResponseNotFound
 from .forms import BookingStatusForm
 from django.core.mail import send_mail
 from django.db import IntegrityError
+from django.core.validators import EmailValidator
+from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.core.exceptions import ValidationError
 
-from hall import models
-from .forms import FeedbackForm
-
-
+# from hall import models
+# from .forms import FeedbackForm
+# import re
 from . import forms 
 
 # from . forms import RegistrationForm
@@ -42,7 +44,7 @@ def loginPage(request):
 
 # ================================*************=======================================
  
-def register(request):
+# def register(request):
     if request.method == "POST":
         uname=request.POST.get("name")
         email=request.POST.get("email")
@@ -67,6 +69,101 @@ def register(request):
                 
     return render(request, 'hall/register.html')
     
+# def is_valid_username(username):
+#     # Use regular expression to check if username contains only letters
+#     return bool(re.match("^[a-zA-Z]+$", username))
+
+# def register(request):
+    if request.method == "POST":
+        uname = request.POST.get("name")
+        email = request.POST.get("email")
+        pass1 = request.POST.get("password1")
+        pass2 = request.POST.get("password2")
+
+        if pass1 != pass2:
+            return HttpResponse("Your password and confirm password do not match!!")
+        else:
+            # Validate username format
+            if not is_valid_username(uname):
+                messages.error(request, "Username should only contain letters.")
+                return redirect('register-page')
+
+            if User.objects.filter(username=uname).exists() or User.objects.filter(email=email).exists():
+                messages.error(request, "A user with the same username or email address already exists. Please choose different credentials.")
+                return redirect('register-page')
+            else:
+                try:
+                    my_user = User.objects.create_user(uname, email, pass1)
+                    my_user.save()
+                    messages.success(request, 'New user registered successfully.')
+                    return redirect('login-page')
+                except IntegrityError:
+                    messages.error(request, "An error occurred during registration.")
+                    return redirect('register-page')
+
+    return render(request, 'hall/register.html')
+
+def is_username_valid(username):
+    try:
+        ASCIIUsernameValidator()(username)
+        if any(char.isdigit() for char in username):
+            raise ValidationError("Username should not contain digits.")
+        return True
+    except ValidationError:
+        return False
+
+class CustomEmailValidator(EmailValidator):
+    def __call__(self, value):
+        super().__call__(value)
+        if value and value[0].isdigit():
+            raise ValidationError("Email addresses cannot start with a number.")
+
+def is_email_valid(email):
+    try:
+        CustomEmailValidator()(email)
+        return True
+    except ValidationError:
+        return False
+    
+def register(request):
+    if request.method == "POST":
+        uname = request.POST.get("name")
+        email = request.POST.get("email")
+        pass1 = request.POST.get("password1")
+        pass2 = request.POST.get("password2")
+
+        # Validate username
+        if not is_username_valid(uname):
+            messages.error(request, "Invalid username. Please use only alphabet letters and no digits.")
+            return redirect('register-page')
+
+        # Validate email
+        if not is_email_valid(email):
+            messages.error(request, "Invalid email address.")
+            return redirect('register-page')
+        
+        try:
+            User.objects.get(email=email)
+            messages.error(request, "A user with the same email address already exists. Please choose a different email.")
+            return redirect('register-page')
+        except User.DoesNotExist:
+            pass
+
+        if pass1 != pass2:
+            messages.error(request, "Your password and confirm password do not match!")
+            return redirect('register-page')
+        else:
+            try:
+                my_user = User.objects.create_user(uname, email, pass1)
+                my_user.save()
+                messages.success(request, 'New user registered successfully.')
+                return redirect('login-page')
+            except IntegrityError:
+                messages.error(request, "An error occurred during registration.")
+                return redirect('register-page')
+
+    return render(request, 'hall/register.html')
+
 def login(request):
     if request.method == "POST":
         username=request.POST.get('name')
@@ -216,6 +313,7 @@ def all_bookings(request):
 
     return render(request, 'hall/all_bookings.html', context)
 
+@login_required
 def feedbackPage(request):
     return render(request, 'hall/user_feedback.html')
 
