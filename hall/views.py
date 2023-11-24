@@ -148,7 +148,11 @@ def register(request):
             return redirect('register-page')
         except User.DoesNotExist:
             pass
-
+        
+        if len(pass1) < 8:
+            messages.error(request, "Password should have at least 8 characters.")
+            return redirect('register-page')
+        
         if pass1 != pass2:
             messages.error(request, "Your password and confirm password do not match!")
             return redirect('register-page')
@@ -183,6 +187,54 @@ def logout(request):
     return redirect('home')
 
 @login_required
+# def book_program(request):
+#     if request.method == "POST":
+#         program_title = request.POST.get("pname")
+#         name = request.POST.get("name")
+#         date = request.POST.get("date")
+#         start_time = request.POST.get("start_time")
+#         end_time = request.POST.get("end_time")
+#         email = request.POST.get("email")
+#         description = request.POST.get("description")
+
+#         # Convert start_time and end_time to datetime objects
+#         start_datetime = datetime.datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
+#         end_datetime = datetime.datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
+
+#         # Check if a booking already exists for the selected date and time range
+#         conflicting_bookings = Booking.objects.filter(
+#             date=date,
+#             start_time__lte=end_datetime,
+#             end_time__gte=start_datetime,
+#         )
+
+#         if conflicting_bookings.exists():
+#             messages.error(request, 'This time slot is already booked. Please choose another time.')
+#         else:
+#             booking = Booking(
+#                 program_title=program_title,
+#                 name=name,
+#                 date=date,
+#                 start_time=start_time,
+#                 end_time=end_time,
+#                 email=email,
+#                 description=description,
+#                 user=request.user,
+#             )
+#             booking.save()
+            
+#             send_mail(
+#                 'Booking Request Sent',
+#                 'Dear User, Your booking request has been sent successfully.',
+#                 'swetara88@gmail.com',
+#                 [email],
+#                 fail_silently=False,
+#             )
+            
+#             messages.success(request, 'Hall booking request sent successfully.')
+#             return redirect("home")
+
+#     return render(request, "hall/book.html")
 def book_program(request):
     if request.method == "POST":
         program_title = request.POST.get("pname")
@@ -196,6 +248,14 @@ def book_program(request):
         # Convert start_time and end_time to datetime objects
         start_datetime = datetime.datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
         end_datetime = datetime.datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
+
+        # Check if the selected time is between 7 am and 3 pm
+        valid_start_time = datetime.datetime.strptime(f"{date} 07:00", "%Y-%m-%d %H:%M")
+        valid_end_time = datetime.datetime.strptime(f"{date} 15:00", "%Y-%m-%d %H:%M")
+
+        if not (valid_start_time <= start_datetime <= valid_end_time) or not (valid_start_time <= end_datetime <= valid_end_time):
+            messages.error(request, 'Hall bookings are only allowed between 7 am and 3 pm.')
+            return render(request, "hall/book.html")
 
         # Check if a booking already exists for the selected date and time range
         conflicting_bookings = Booking.objects.filter(
